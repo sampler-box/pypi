@@ -2,46 +2,42 @@ from bs4 import BeautifulSoup
 
 import os
 import sys
+import shutil
 
-
-def _get_app_name(input_message="Enter an app name: "):
-    try:
-        app_name = sys.argv[1]
-    except IndexError:
-        app_name = input(input_message)
-
-    # Validate app name
+def _get_app_name():
+    app_name = sys.argv[1]
     allowed_app_names = []
     for item in os.listdir("."):
         if os.path.isdir(item) and not item.startswith("."):
             allowed_app_names.append(item)
 
     if app_name not in allowed_app_names:
-        input_message = f"This app name doesn't exist. Please choose an app name in {allowed_app_names}: "
-        app_name = _get_app_name(input_message)
+        _init_package_page(app_name)
 
     return app_name
 
+def _init_package_page(app_name):
+    os.mkdir(app_name)
+    shutil.copyfile("package-page-template.html", f"{app_name}/index.html")
+    with open(f"{app_name}/index.html", "r+") as html:
+        package_page = BeautifulSoup(html, 'html.parser')
+        package_page.find("title").string = app_name
+
+    with open(f"{app_name}/index.html", "w") as html:
+        html.write(str(package_page.prettify()))
 
 def _get_version_number():
-    try:
-        version_number = sys.argv[2]
-    except IndexError:
-        version_number = input("Enter a version number: ")
-
+    version_number = sys.argv[2]
     return version_number
 
 
-def _get_protocol(input_message="Enter a protocol (https or ssh): "):
-    try:
-        protocol = sys.argv[3]
-    except IndexError:
-        protocol = input(input_message)
+def _get_protocol():
+    protocol = sys.argv[3]
 
     allowed_protocols = ["https", "ssh"]
     if protocol not in allowed_protocols:
-        input_message = f"This protocol is not supported. Please choose one in {allowed_protocols}: "
-        protocol = _get_protocol(input_message)
+        print(f"This protocol is not supported. Please choose one in '{allowed_protocols}'.")
+        exit(1)
 
     return protocol
 
@@ -52,7 +48,7 @@ if __name__ == "__main__":
     protocol = _get_protocol()
 
     with open("commit_message.txt", "w") as f:
-        commit_message = f"chore({app}): release version {version}"
+        commit_message = f"Publish {app} - {version}"
         f.write(commit_message)
 
     with open(f"{app}/index.html", "r+") as html:
