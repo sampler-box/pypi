@@ -4,7 +4,7 @@ bump:
 	make commit
 
 commit:
-	git add -p
+	git add .
 	git commit -m "$(shell cat commit_message.txt)"
 	git push origin master
 
