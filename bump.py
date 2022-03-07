@@ -54,7 +54,10 @@ if __name__ == "__main__":
     with open(f"{app}/index.html", "r+") as html:
         soup = BeautifulSoup(html, 'html.parser')
         new_a = soup.new_tag("a")
-        new_a["href"] = f"git+{protocol}://git@github.com/sampler-box/{app}.git@{version}#egg={app}-{version}"
+        if protocol == 'https':
+            new_a["href"] = f"git+https://github.com/sampler-box/{app}.git@{version}#egg={app}-{version}"
+        else: # ssh
+            new_a["href"] = f"git+ssh://git@github.com/sampler-box/{app}.git@{version}#egg={app}-{version}"
         new_a.string = f"{app}-{version}"
         soup.html.body.insert(0, new_a)
 
