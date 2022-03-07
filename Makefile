@@ -7,6 +7,7 @@ commit:
 	git add .
 	git commit -m "$(shell cat commit_message.txt)"
 	git push origin master
+	rm commit_message.txt
 
 make install:
 	pip install -r requirements.txt
