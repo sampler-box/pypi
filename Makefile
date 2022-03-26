@@ -1,6 +1,6 @@
 bump:
 	git pull origin master
-	python bump.py $(app) $(version) https
+	python3 bump.py $(app) $(version) https
 	make commit
 
 commit:
